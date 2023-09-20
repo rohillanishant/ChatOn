@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -32,7 +30,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -46,8 +43,6 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class HomeActivity : ComponentActivity() {
@@ -330,7 +325,6 @@ class HomeActivity : ComponentActivity() {
                             val email = postSnapshot.child("email").value.toString()
                             val phoneNumber = postSnapshot.child("phoneNumber").value.toString()
                             val profilePhoto=postSnapshot.child("profilePhoto").value.toString()
-                            val isOnline=postSnapshot.child("isOnline").value.toString().toBoolean()
                             if (userId != Firebase.auth.currentUser?.uid.toString() && (userName.startsWith(user) || name.startsWith(user))) {
                                 allUsers.add(
                                     User(
@@ -349,7 +343,7 @@ class HomeActivity : ComponentActivity() {
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@HomeActivity, "${error.message}", Toast.LENGTH_SHORT)
+                        Toast.makeText(this@HomeActivity, error.message, Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
@@ -695,24 +689,21 @@ fun Home(){
                 dRef.removeEventListener(listener) // Remove the listener to avoid leaks
             }
         }
-
-            allUsers.sortByDescending { it.date }
-            allUsers.sortByDescending { it.time }
-//        val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
-//        val sortedUsers = allUsers.sortedWith(compareByDescending<ChatUsers> { user ->
-//            val dateTimeString = "${user.date} ${user.time}"
-//            try {
-//                val parsedDate = sdf.parse(dateTimeString)
-//                parsedDate
-//            } catch (e: ParseException) {
-//                // Handle the exception or log an error message
-//                null
-//            }
-//        }.thenByDescending { it.time })
-        val filteredUsers = allUsers.filter { it.name.startsWith(user, ignoreCase = true) || it.userName.startsWith(user,true)}
+        val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+        val sortedUsers = allUsers.sortedWith(compareByDescending<ChatUsers> { user ->
+            val dateTimeString = "${user.date} ${user.time}:00"
+            try {
+                val parsedDate = sdf.parse(dateTimeString)
+                parsedDate
+            } catch (e: ParseException) {
+                // Handle the exception or log an error message
+                null
+            }
+        }.thenByDescending { it.time })
+        val filteredUsers = sortedUsers.filter { it.name.startsWith(user, ignoreCase = true) || it.userName.startsWith(user,true)}
         Column(modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.7f)
+            .fillMaxHeight(1f)
             .verticalScroll(rememberScrollState())) {
             for(i in filteredUsers){
                 Card(
