@@ -8,5 +8,6 @@ data class ChatUsers(
     val date:String,
     val time:String,
     val isReceived:Boolean,
-    val profilePhoto:String
+    val profilePhoto:String,
+    val token:String
 )

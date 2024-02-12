@@ -7,15 +7,19 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -54,21 +58,28 @@ class SplashActivity : ComponentActivity() {
 @Composable
 fun Greeting() {
     Column(horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center, modifier = Modifier
+        .fillMaxSize(1f)
         .background(
             brush = Brush.verticalGradient(
                 listOf(
-                    Color(255, 255, 255, 255), AppColor)
+                    Color(255, 255, 255, 255), AppColor
+                )
             )
         )
-        .padding(40.dp, 30.dp)) {
-        Text(text ="ChatOn 🗨️",
-            color= Color(99, 123, 158, 255),
-            fontWeight = FontWeight.W500,
-            fontSize = 40.sp
-        )
-        Text(text = "Let's Chat!",
-            color = Color.Red,
-            fontWeight = FontWeight.W500
-        )
+    //    .padding(40.dp, 30.dp)
+            )
+    {
+        var animate by remember {
+            mutableStateOf(false)
+        }
+        val n by animateIntAsState(targetValue = if(animate) 300 else 0)
+        Handler().postDelayed({
+            // Start the next activity
+            animate=true;
+        }, 1000)
+        Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo",
+            modifier = Modifier.size(n.dp).align(Alignment.CenterHorizontally))
+
+
     }
 }

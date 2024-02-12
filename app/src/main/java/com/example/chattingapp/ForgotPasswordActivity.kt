@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,12 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.chattingapp.ui.theme.AppColor
 import com.example.chattingapp.ui.theme.ChattingAppTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -47,6 +50,10 @@ class ForgotPasswordActivity : ComponentActivity() {
         auth = FirebaseAuth.getInstance()
     }
     fun resetPassword(email: String) {
+        if(email.isEmpty()){
+            Toast.makeText(this@ForgotPasswordActivity,"Email field cannot be empty",Toast.LENGTH_SHORT).show()
+            return
+        }
         auth.sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -56,7 +63,7 @@ class ForgotPasswordActivity : ComponentActivity() {
                     // Display a success message to the user or navigate to a different screen
                 } else {
                     // Failed to send password reset email
-                    Toast.makeText(this@ForgotPasswordActivity,"Failed",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ForgotPasswordActivity,"Enter correct email",Toast.LENGTH_SHORT).show()
 
                     // Display an error message to the user or handle the failure gracefully
                 }
@@ -70,22 +77,18 @@ class ForgotPasswordActivity : ComponentActivity() {
         }
         Column(modifier = Modifier.background(brush= Brush
             .verticalGradient(colors = listOf(
-                Color(255, 255, 255, 255),
-                Color(22,139,179,37)
+                Color(255, 255, 255, 255), AppColor
             )
             )
         ), horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
-            Text(text = "ChatOn 🗨️",
-                color= Color(99, 123, 158, 255),
-                fontSize = 40.sp,
-                fontWeight = FontWeight.W500
-            )
+            Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo",
+                modifier = Modifier.size(250.dp).align(Alignment.CenterHorizontally))
             Text(text = "Enter your email",
                 color= Color(99, 123, 158, 255),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.W500,
-                modifier = Modifier.padding(top=50.dp,start=63.dp, bottom = 8.dp).align(Alignment.Start)
+                modifier = Modifier.padding(top=10.dp,start=63.dp, bottom = 8.dp).align(Alignment.Start)
             )
             OutlinedTextField(
                 value = email,
@@ -102,7 +105,7 @@ class ForgotPasswordActivity : ComponentActivity() {
                 placeholder = {
                     Text(text = "Enter Email")
                 },
-                isError = email.isEmpty() || !email.contains('@') || !email.contains(".com")
+                isError = email.isEmpty() || !email.contains('@') || !email.contains(".")
             )
             OutlinedButton(onClick = {
                 resetPassword(email)

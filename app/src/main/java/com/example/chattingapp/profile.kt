@@ -59,6 +59,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.PickVisualMediaRequest
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.google.firebase.storage.FirebaseStorage
@@ -99,7 +101,7 @@ fun saveDetails(username: String, name: String, phoneNumber: String,profilePhoto
                 dbRef.child("phoneNumber").setValue(phoneNumber)
                 if(profilePhoto!=null){
                     val storage = FirebaseStorage.getInstance()
-                    val storageRef = storage.getReference("profilePhoto/${auth.currentUser?.uid!!}");
+                    val storageRef = storage.getReference("profilePhoto").child(auth.currentUser?.uid!!)
                     val uploadTask = storageRef.putFile(profilePhoto)
                     uploadTask.addOnSuccessListener {
                         storageRef.downloadUrl.addOnSuccessListener { downloadUri ->

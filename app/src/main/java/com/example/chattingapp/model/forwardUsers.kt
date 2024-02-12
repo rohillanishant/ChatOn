@@ -7,6 +7,7 @@ data class forwardUsers(
     val name:String,
     val email:String,
     val phoneNumber:String,
-    var isSelected:Boolean
+    var isSelected:Boolean,
+    val token:String
 ) {
 }

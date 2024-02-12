@@ -9,22 +9,21 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo2"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChattingApp"
         tools:targetApi="31">
         <activity
             android:name=".ProfileActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/Theme.ChattingApp" />
         <activity
             android:name=".ForwardActivity"
             android:exported="false"
             android:label="@string/title_activity_forward"
             android:theme="@style/Theme.ChattingApp" />
-        <activity
-            android:name=".CallActivity"
-            android:exported="false" />
         <activity
             android:name=".ChatActivity"
             android:exported="false"
@@ -51,6 +50,13 @@
             android:exported="false"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.ChattingApp" />
+        <service
+            android:name=".notifications.Notifications"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
         <activity
             android:name=".SplashActivity"
             android:exported="true"

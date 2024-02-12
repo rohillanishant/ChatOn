@@ -76,32 +76,34 @@ fun MessageClicked(message:Message,onClick:()-> Unit,receiverDetails:kotlin.coll
                     verticalArrangement = Arrangement.SpaceAround,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Button(
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White
-                        ),
-                        onClick = { iscopyText=true },
-                        modifier = Modifier
-                            .padding(top = 5.dp)
-                            .fillMaxWidth()
-                            .shadow(elevation = 2.dp, shape = RoundedCornerShape(15.dp))
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
+                    if(!message.photo){
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.White
+                            ),
+                            onClick = { iscopyText=true },
+                            modifier = Modifier
+                                .padding(top = 5.dp)
+                                .fillMaxWidth()
+                                .shadow(elevation = 2.dp, shape = RoundedCornerShape(15.dp))
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.copy),
-                                contentDescription = "Copy Icon",
-                                Modifier.size(27.dp),
-                                tint = Color.Black
-                            )
-                            Text(
-                                text = "Copy Text",
-                                color = Color.Black,
-                                textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.copy),
+                                    contentDescription = "Copy Icon",
+                                    Modifier.size(27.dp),
+                                    tint = Color.Black
+                                )
+                                Text(
+                                    text = "Copy Text",
+                                    color = Color.Black,
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
                         }
                     }
                     Button(
@@ -200,6 +202,7 @@ fun MessageClicked(message:Message,onClick:()-> Unit,receiverDetails:kotlin.coll
         if(forwardMessage){
           val intent=Intent(LocalContext.current,ForwardActivity::class.java)
             intent.putExtra("message",message.message)
+            intent.putExtra("isPhoto",message.photo)
             intent.putStringArrayListExtra("senderDetails", senderDetails)
             LocalContext.current.startActivity(intent)
             onClick()

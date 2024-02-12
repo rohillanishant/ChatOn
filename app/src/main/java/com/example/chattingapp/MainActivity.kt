@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -33,8 +34,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.chattingapp.ui.theme.AppColor
 import com.example.chattingapp.ui.theme.ChattingAppTheme
+import com.example.chattingapp.ui.theme.TopBarColor
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ComponentActivity() {
 
@@ -60,6 +64,8 @@ class MainActivity : ComponentActivity() {
         }
         auth = FirebaseAuth.getInstance()
     }
+
+
 
     fun loginUser(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
@@ -90,19 +96,20 @@ class MainActivity : ComponentActivity() {
             mutableStateOf(false)
         }
         Column(modifier = Modifier.background(brush= Brush
-            .verticalGradient(colors = listOf(
-                Color(255, 255, 255, 255),
-                Color(22,139,179,37)
+            .verticalGradient(colors =
+            listOf(
+                Color(255, 255, 255, 255), AppColor
             )
             )
         ), horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-            Text(text = "ChatOn 🗨️",
-                color= Color(99, 123, 158, 255),
-                fontSize = 40.sp,
-                fontWeight = FontWeight.W500
-            )
-
+//            Text(text = "ChatOn 🗨️",
+//                color= TopBarColor,//Color(99, 123, 158, 255),
+//                fontSize = 40.sp,
+//                fontWeight = FontWeight.W500
+//            )
+            Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo",
+                modifier = Modifier.size(250.dp).align(Alignment.CenterHorizontally))
             OutlinedTextField(
                 value = email,
                 onValueChange = {
@@ -120,7 +127,6 @@ class MainActivity : ComponentActivity() {
                     Text(text = "Enter email")
                 },
                 modifier = Modifier
-                    .padding(top = 50.dp)
                     .clip(shape = RoundedCornerShape(5.dp)),
             )
             OutlinedTextField(

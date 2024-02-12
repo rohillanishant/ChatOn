@@ -1,22 +1,13 @@
 package com.example.chattingapp
 
-import android.annotation.SuppressLint
-import android.app.DatePickerDialog
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -38,14 +29,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import com.example.chattingapp.model.User
+import com.example.chattingapp.ui.theme.AppColor
 import com.example.chattingapp.ui.theme.ChattingAppTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.database.*
-import java.util.*
-import kotlin.collections.ArrayList
 
 class RegisterActivity : ComponentActivity() {
    // lateinit var sharedPreferences: SharedPreferences
@@ -169,7 +158,7 @@ class RegisterActivity : ComponentActivity() {
                                 if (task.isSuccessful) {
                                     // Sign-up successful, user is now signed in]
                                     dbRef= FirebaseDatabase.getInstance().reference
-                                    dbRef.child("User").child(auth.currentUser?.uid!!).setValue(User(auth.currentUser?.uid!!,username,"",name,email,phoneNumber))
+                                    dbRef.child("User").child(auth.currentUser?.uid!!).setValue(User(auth.currentUser?.uid!!,username,"",name,email,phoneNumber,null))
                                     Toast.makeText(this@RegisterActivity,"Registered", Toast.LENGTH_SHORT).show()
                                     startActivity(Intent(this@RegisterActivity,MainActivity::class.java))
                                     // You can perform further actions here, such as updating user profile, sending verification email, etc.
@@ -218,9 +207,9 @@ class RegisterActivity : ComponentActivity() {
             mutableStateOf(false)
         }
         Column(modifier = Modifier.background(brush= Brush
-            .verticalGradient(colors = listOf(
-                Color(255, 255, 255, 255),
-                Color(22,139,179,37)
+            .verticalGradient(colors =
+            listOf(
+                Color(255, 255, 255, 255), AppColor
             )
             )
         ), horizontalAlignment = Alignment.CenterHorizontally,
