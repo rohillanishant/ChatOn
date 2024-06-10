@@ -9,6 +9,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.ClickableSpan
+import android.text.style.URLSpan
+import android.text.util.Linkify
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -23,6 +28,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -36,12 +42,19 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -64,6 +77,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import org.json.JSONObject
 import java.net.URI
 import java.text.SimpleDateFormat
@@ -367,6 +381,33 @@ class ChatActivity : ComponentActivity() {
                         }
                     }
                     if(!i.photo){
+                        val annotatedString = buildAnnotatedString {
+                            append(i.message)
+                            val regex = Regex("""(https?://\S+\.(\w{2,}|co|org|net|edu|gov)(\S+)?[\w\-\.,@?^=%&amp;:/\*\(\)]*)""") // Matches valid URLs
+                            val matches = regex.findAll(i.message)
+                            for (match in matches) {
+                                val start = match.range.first
+                                val end = match.range.last + 1
+                                val url = i.message.substring(start, end)
+                                addStyle(
+                                    style = SpanStyle(
+                                        color = Color.Blue, // Use the color you want for the link
+                                        textDecoration = TextDecoration.Underline,
+                                        fontSize = 18.sp,
+                                    ),
+                                    start = start,
+                                    end = end
+                                )
+                                addStringAnnotation(
+                                    "url",
+                                    url,
+                                    start,
+                                    end
+                                )
+                            }
+                        }
+
+                        val uriHandler = LocalUriHandler.current
                         if(i.received){
                             Row(modifier = Modifier
                                 .fillMaxWidth()
@@ -380,15 +421,19 @@ class ChatActivity : ComponentActivity() {
                                     onClick = {}),
                                 horizontalArrangement = Arrangement.Start){
                                     Column() {
-                                        Text(
-                                            text=i.message,
-                                            textAlign = TextAlign.Start,
-                                            fontSize = 18.sp,
+                                        ClickableText(
                                             modifier = Modifier
-                                                .padding(end = 10.dp, start = 10.dp)
+                                                .padding(end = 30.dp, start = 10.dp)
                                                 .clip(shape = RoundedCornerShape(15.dp))
                                                 .background(color = TopBarColor)
-                                                .padding(end = 10.dp, start = 10.dp, bottom = 10.dp)
+                                                .padding(end = 10.dp, start = 10.dp),
+                                            text = annotatedString,
+                                            style = TextStyle(fontSize = 18.sp),
+                                            onClick = { offset ->
+                                                val uri=annotatedString.getStringAnnotations("url", offset, offset)
+                                                    .firstOrNull()?.item
+                                                if(uri!=null) uriHandler?.openUri(uri)
+                                            },
                                         )
                                         Text(
                                             text=i.time,
@@ -413,15 +458,29 @@ class ChatActivity : ComponentActivity() {
                                 .padding(start = 4.dp, top = 4.dp),
                                 horizontalArrangement = Arrangement.End){
                                 Column() {
-                                    Text(
-                                        text=i.message,
-                                        textAlign = TextAlign.Start,
-                                        fontSize = 18.sp,
+//                                    Text(
+//                                        text=i.message,
+//                                        textAlign = TextAlign.Start,
+//                                        fontSize = 18.sp,
+//                                        modifier = Modifier
+//                                            .padding(end = 10.dp, start = 30.dp)
+//                                            .clip(shape = RoundedCornerShape(15.dp))
+//                                            .background(color = TopBarColor)
+//                                            .padding(end = 10.dp, start = 10.dp)
+//                                    )
+                                    ClickableText(
                                         modifier = Modifier
                                             .padding(end = 10.dp, start = 30.dp)
                                             .clip(shape = RoundedCornerShape(15.dp))
                                             .background(color = TopBarColor)
-                                            .padding(end = 10.dp, start = 10.dp)
+                                            .padding(end = 10.dp, start = 10.dp),
+                                        text = annotatedString,
+                                        style = TextStyle(fontSize = 18.sp),
+                                        onClick = { offset ->
+                                            val uri=annotatedString.getStringAnnotations("url", offset, offset)
+                                                .firstOrNull()?.item
+                                            if(uri!=null) uriHandler?.openUri(uri)
+                                        },
                                     )
                                     Text(
                                         text=i.time,
